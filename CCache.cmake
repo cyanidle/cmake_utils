@@ -1,0 +1,18 @@
+function(enable_ccache)
+  set(CACHE_OPTION "ccache" CACHE STRING "Compiler cache to be used.")
+  set(EXPLICITLY_SUPPORTED_CACHE_SYSTEMS "ccache" "sccache")
+  set_property(CACHE CACHE_OPTION PROPERTY STRINGS ${EXPLICITLY_SUPPORTED_CACHE_SYSTEMS})
+
+  if(NOT "${CACHE_OPTION}" IN_LIST EXPLICITLY_SUPPORTED_CACHE_SYSTEMS)
+    message(STATUS "Using custom compiler cache system: '${CACHE_OPTION}', explicitly supported entries are ${EXPLICITLY_SUPPORTED_CACHE_SYSTEMS}")
+  endif()
+
+  find_program(CACHE_BINARY ${CACHE_OPTION})
+  if(CACHE_BINARY)
+    message(STATUS "'${CACHE_BINARY}' found and enabled.")
+    set(CMAKE_CXX_COMPILER_LAUNCHER ${CACHE_BINARY} CACHE FILEPATH "CXX compiler cache used.")
+    set(CMAKE_C_COMPILER_LAUNCHER ${CACHE_BINARY} CACHE FILEPATH "C compiler cache used.")
+  else()
+    message(WARNING "'${CACHE_BINARY}' is enabled but was not found. Not using it.")
+  endif()
+endfunction()
